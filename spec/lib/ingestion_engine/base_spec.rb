@@ -24,8 +24,9 @@ describe IngestionEngine::Base do
     context 'with missing attr that is required' do
       let(:csv) { File.open('spec/sample_csvs/users_with_missing_first_name.csv') }
 
-      it 'saves the valid items' do
+      it 'does not save invalid items' do
         IngestionEngine::Base.new(User, csv).ingest
+        expect(User.count).to eq 2
         expect(usernames).to include 'durrhurrdurr'
         expect(usernames).to include 'Carrion'
         expect(usernames).to_not include 'BeMathis'
