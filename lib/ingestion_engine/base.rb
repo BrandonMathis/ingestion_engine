@@ -1,11 +1,15 @@
 module IngestionEngine
   class Base
-    attr_reader :rows, :klass, :headers
+    attr_reader :csv, :klass
 
-    def initialize(klass, file)
+    def initialize(klass, filepath)
       @klass = klass
-      @rows = CSV.read(file)
-      @headers = @rows.shift.map!(&:strip)
+      @csv = CSV.parse(
+        IO.read(filepath),
+        headers: true,
+        header_converters: lambda { |f| f.strip },
+        converters: lambda { |f| f ? f.strip : nil }
+      )
     end
 
     def ingest(as: IngestionEngine::Entity)
@@ -17,8 +21,8 @@ module IngestionEngine
     private
 
     def init
-      rows.map do |row|
-        IngestionEngine::Entity.new(headers, row).ingest_as(klass)
+      csv.map do |row|
+        IngestionEngine::Entity.new(row).ingest_as(klass)
       end
     end
 
@@ -26,7 +30,7 @@ module IngestionEngine
       invalids = entities.select(&:invalid?).each do |invalid_entity|
         entities.delete(invalid_entity)
       end
-      IngestionEngine::Reporter.new(invalids, headers).log do |invalid|
+      IngestionEngine::Reporter.new(invalids, csv.headers).log do |invalid|
         invalid.errors.full_messages.to_sentence
       end
     end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe IngestionEngine::Base do
-  let(:csv) { File.open('spec/sample_csvs/users.csv') }
+  let(:csv) { 'spec/sample_csvs/users.csv' }
   let(:emails) { User.all.map(&:email) }
   let(:usernames) { User.all.map(&:username) }
 

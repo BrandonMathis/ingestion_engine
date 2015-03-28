@@ -2,17 +2,17 @@ module IngestionEngine
   class Entity
     attr_reader :headers, :row
 
-    def initialize(headers, row)
-      @headers = headers
+    def initialize(row)
       @row = row
     end
 
     def ingest_as(klass)
-      obj = klass.new
-      headers.each_with_index do |header, index|
-        obj.send("#{header}=", row[index].strip)
-      end
-      obj
+      headers = row.headers
+      klass.new row.to_hash
+    end
+
+    def value_of
+      row[index].strip
     end
   end
 end

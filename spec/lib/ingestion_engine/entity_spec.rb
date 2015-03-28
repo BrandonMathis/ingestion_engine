@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 class InvitedUser < IngestionEngine::Entity
+  computed_attrs :username
 end
 
 describe IngestionEngine::Entity do
