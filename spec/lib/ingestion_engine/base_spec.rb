@@ -2,6 +2,7 @@ require 'spec_helper'
 
 class User < ActiveRecord::Base
   validates_presence_of :first_name
+  validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
 end
 
 describe IngestionEngine::Base do
@@ -37,6 +38,19 @@ describe IngestionEngine::Base do
         CSV.foreach('invalid.csv', {headers: true}) do |row|
           expect(row['username']).to eq 'BeMathis'
         end
+      end
+    end
+
+    context 'with bad formatted email' do
+      let(:csv) { File.open('spec/sample_csvs/users_with_bad_email.csv') }
+
+      it 'dumps the bad entry into invalid records csv' do
+        IngestionEngine::Base.new(User, csv).ingest
+        invalids = CSV.parse(File.open('invalid.csv'), headers: true, header_converters: :symbol)
+        expect(invalids[0][:username]).to eq 'BeMathis'
+        expect(invalids[1][:username]).to eq 'Carrion'
+        expect(invalids[0][:errors].strip).to eq 'Email is invalid'
+        expect(invalids[1][:errors].strip).to eq 'Email is invalid'
       end
     end
   end

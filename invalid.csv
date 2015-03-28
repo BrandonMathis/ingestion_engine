@@ -1,2 +1,3 @@
 username,email,first_name,last_name,errors
-BeMathis, bemathis@gmail.com, , mathis, First name can't be blank
+BeMathis, bemathis<at>gmail.com, brandon, mathis, Email is invalid
+Carrion, carrion@gmail, carrion, fost, Email is invalid
