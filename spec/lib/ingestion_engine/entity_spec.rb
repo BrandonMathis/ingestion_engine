@@ -1,7 +1,15 @@
 require 'spec_helper'
 
 class InvitedUser < IngestionEngine::Entity
-  computed_attrs :username
+  computed_attrs :full_name, :token
+
+  def full_name
+    "#{object.first_name}#{object.last_name}"
+  end
+
+  def token
+    SecureRandom.hex
+  end
 end
 
 describe IngestionEngine::Entity do
@@ -18,6 +26,8 @@ describe IngestionEngine::Entity do
 
   describe '#has_attribute' do
     it 'will define the custom attributes' do
+      IngestionEngine::Base.new(User, csv).ingest(as: InvitedUser)
+      expect(User.first.full_name).to eq 'BrandonMathis'
     end
   end
 end

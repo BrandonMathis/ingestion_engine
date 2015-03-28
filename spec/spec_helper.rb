@@ -30,6 +30,8 @@ RSpec.configure do |config|
       t.string :last_name
       t.string :email
       t.string :username
+      t.string :token
+      t.string :full_name
     end
   end
 

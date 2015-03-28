@@ -13,16 +13,16 @@ module IngestionEngine
     end
 
     def ingest(as: IngestionEngine::Entity)
-      entities = init
+      entities = init(as)
       dump_invalid entities
       save entities
     end
 
     private
 
-    def init
+    def init(as)
       csv.map do |row|
-        IngestionEngine::Entity.new(row).ingest_as(klass)
+        as.new(row).ingest_as(klass)
       end
     end
 
