@@ -8,22 +8,17 @@ module IngestionEngine
       @headers = @rows.shift.map!(&:strip)
     end
 
-    def ingest
-      entities = []
-      init entities
+    def ingest(as: IngestionEngine::Entity)
+      entities = init
       dump_invalid entities
       save entities
     end
 
     private
 
-    def init(entities)
-      rows.each do |row|
-        obj = klass.new
-        headers.each_with_index do |header, index|
-          obj.send("#{header}=", row[index].strip)
-        end
-        entities << obj
+    def init
+      rows.map do |row|
+        IngestionEngine::Entity.new(headers, row).ingest_as(klass)
       end
     end
 

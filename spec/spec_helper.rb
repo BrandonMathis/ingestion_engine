@@ -37,3 +37,8 @@ RSpec.configure do |config|
     connection.drop_table :users
   end
 end
+
+class User < ActiveRecord::Base
+  validates_presence_of :first_name
+  validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
+end

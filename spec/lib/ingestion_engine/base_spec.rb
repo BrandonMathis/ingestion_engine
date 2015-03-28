@@ -1,25 +1,20 @@
 require 'spec_helper'
 
-class User < ActiveRecord::Base
-  validates_presence_of :first_name
-  validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, on: :create }
-end
-
 describe IngestionEngine::Base do
-  describe '#ingest' do
-    let(:csv) { File.open('spec/sample_csvs/users.csv') }
-    let(:emails) { User.all.map(&:email) }
-    let(:usernames) { User.all.map(&:username) }
+  let(:csv) { File.open('spec/sample_csvs/users.csv') }
+  let(:emails) { User.all.map(&:email) }
+  let(:usernames) { User.all.map(&:username) }
 
+  describe '#ingest' do
     it 'saves the given items' do
       IngestionEngine::Base.new(User, csv).ingest
       expect(User.count).to eq 3
-      expect(usernames).to include 'BeMathis'
-      expect(usernames).to include 'Carrion'
-      expect(usernames).to include 'durrhurrdurr'
-      expect(emails).to include 'bemathis@gmail.com'
-      expect(emails).to include 'carrion@gmail.com'
-      expect(emails).to include 'durrhurrdurr@gmail.com'
+      %w(BeMathis Carrion durrhurrdurr).each do |x|
+        expect(usernames).to include x
+      end
+      %w(bemathis@gmail.com carrion@gmail.com durrhurrdurr@gmail.com).each do |x|
+        expect(emails).to include x
+      end
     end
 
     context 'with missing attr that is required' do
